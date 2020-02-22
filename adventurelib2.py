@@ -154,9 +154,10 @@ class Room:
         setattr(Room, forward, None)
         setattr(Room, reverse, None)
 
-    def __init__(self, description):
+    def __init__(self, description, image=None):
         self.description = description.strip()
 
+        self.image = image
         # Copy class Bags to instance variables
         for k, v in vars(type(self)).items():
             if isinstance(v, Bag):
@@ -476,6 +477,9 @@ def help():
     cmds = sorted(c.orig_pattern for c, _, _ in commands if c.is_active())
     for c in cmds:
         print(c)
+
+def helplist():
+    return  sorted(c.orig_pattern for c, _, _ in commands if c.is_active())
 
 
 def _available_commands():
