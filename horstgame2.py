@@ -4,21 +4,24 @@ import random
 import PySimpleGUI as sg
 a.Room.items = a.Bag()
 
+# each room shall have a image-filename attribute
+
 current_room = starting_room = a.Room("""
 You are in a dark room.
-""")
+""", image="dark.png")
+
 
 valley = starting_room.north = a.Room("""
 You are in a beautiful valley.
-""")
+""", image="valley.png")
 
 magic_forest = valley.north = a.Room("""
 You are in a enchanted forest where magic grows wildly.
-""")
+""", image="forest.png")
 
 cave = magic_forest.north = a.Room("""
 You are inside a dark cave.
-You hear a waterfall nearby""")
+You hear a waterfall nearby""", image="cave.png")
 
 
 mallet = a.Item('rusty mallet', 'mallet')
@@ -105,10 +108,16 @@ def drop(thing):
 @a.when('look')
 def look():
     a.say(current_room)
+    #a.say("image: {}".format(current_room.image))
     if current_room.items:
         for i in current_room.items:
             a.say('A %s is here.' % i)
 
+def command_list():
+    return [c for c in commands]
+
+def inventory_list():
+    return [i for i in inventory]
 
 @a.when('inventory')
 def show_inventory():
@@ -124,13 +133,22 @@ def cast(magic):
     elif magic == "fireball":
         a.say("you cast a flaming Fireball! Woooosh....")
 
+# ------------------ GUI ------------------
 
+directions = [
+               [sg.Text("", size=(15,1)),sg.Button("North", size=(10,1)), sg.Text("",size=(15,1))],
+               [sg.Button("West", size=(10,1)),sg.Text("", size=(15,1)),sg.Button("East",size=(10,1))],
+               [sg.Text("", size=(15,1)),sg.Button("South", size=(10,1)), sg.Text("",size=(15,1))],
+               [sg.Text("valid commands", size=(20,1)), sg.Text("your items:", size=(20,1))],
+               [sg.Listbox(key="help", size=(20,10), values=[]),  sg.Listbox(key="inventory", values=[], size=(20,10))] ,
+             ]
 
-layout = [[sg.Text("Adventure - press start to begin", key="header",)],
-          [sg.Output(key="output", size=(70,20))],
+layout = [
+          [sg.Text("Adventure - press start to begin", key="header",)],
+          [sg.Output(key="output", size=(70,20)),sg.Col(layout=directions)],
           [sg.InputText(key="command", size=(70, 2), do_not_clear=False),
            sg.Button("execute", bind_return_key=True)],
-          [sg.Button("Start"), sg.Button("Cancel")],
+          [sg.Button("Start"), sg.Button("Cancel"), sg.Button("test")],
          ]
 
 window = sg.Window(title="Adventuregame", layout=layout)
@@ -141,15 +159,21 @@ while True:
         break
     if event == "Start":
         window["header"].update("Game is running")
-        #print("printing...")
-        #x = input("was???")
-        #print("--> jojo", x)
-        #look()
         a.say("starting a new adventure")
-        a.start()
+        #a.start()
+        look()
     if event == "execute":
         a._handle_command(values["command"].strip())
-    #print(values)
+    if event == "test":
+        ugly = a._available_commands()
+        print(ugly)
+        #for t in ugly:
+        #    print(t[0]])
+        a.help()
+    # update command and help list
+    window["help"].update(a.helplist())
+    window["inventory"].update(inventory_list())
+    
 window.close()
 print("bye")
 
