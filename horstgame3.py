@@ -118,14 +118,6 @@ def look():
         for i in current_room.items:
             a.say('A %s is here.' % i)
 
-def command_list():
-    return [c for c in commands]
-
-def inventory_list():
-    return [i for i in inventory]
-
-def item_list():
-    return [i for i in current_room.items]
 
 @a.when('inventory')
 def show_inventory():
@@ -140,6 +132,27 @@ def cast(magic):
         a.say("Which magic you would like to spell?")
     elif magic == "fireball":
         a.say("you cast a flaming Fireball! Woooosh....")
+
+
+# ---- new functons for gui ---
+
+
+
+def command_list():
+    return [c for c in commands]
+
+def inventory_list():
+    return [i for i in inventory]
+
+def item_list():
+    return [i for i in current_room.items]
+
+
+@a.when("help")
+def printhelp():
+    li = a.helplist()
+    for c in li:
+        print(c)
 
 # ------------------ GUI ------------------
 
